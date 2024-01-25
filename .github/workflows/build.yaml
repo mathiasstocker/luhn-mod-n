@@ -1,0 +1,112 @@
+name: "Build"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  phpstan:
+    name: "phpstan"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: 8.1
+
+      - name: Get composer cache directory
+        id: composerCache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composerCache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: "Install latest dependencies"
+        run: composer install --ansi --no-interaction --no-progress --prefer-dist
+        working-directory: "."
+
+      - name: "Run PHPStan"
+        run: php vendor/bin/phpstan analyse --error-format=github
+        working-directory: "."
+
+  php-cs-fixer:
+    name: "php-cs-fixer"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: 8.1
+
+      - name: Get composer cache directory
+        id: composerCache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composerCache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: "Install latest dependencies"
+        run: composer install --ansi --no-interaction --no-progress --prefer-dist
+        working-directory: "."
+
+      - name: "Run php-cs-fixer"
+        run: php vendor/bin/php-cs-fixer fix -v --dry-run --using-cache=no
+        working-directory: "."
+
+  test:
+    name: "phpunit"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@verbose"
+        with:
+          coverage: "pcov"
+          php-version: 8.1
+
+      - name: Get composer cache directory
+        id: composerCache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composerCache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: "Install latest dependencies"
+        run: |
+          composer install --ansi --no-interaction --no-progress --prefer-dist
+        working-directory: "."
+
+      - name: "Run PHPUnit"
+        run: php vendor/bin/phpunit
+        working-directory: "."

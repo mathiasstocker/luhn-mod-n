@@ -1,0 +1,34 @@
+{
+    "name": "stocker4all/luhn-mod-n",
+    "description": "luhn-mod-n is a very simple solution to generate and verify luhn mod n checksums. Possible bases (value for n) are between 2 and 36. Luhn mod 10 is well known from the credit card number checksum. But also in different bases it can be useful to have this checksum functionality.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "S4A\\LuhnModN\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mathias Stocker",
+            "email": "mathias.stocker@proton.me"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.48",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-phpunit": "^1.3",
+        "phpstan/phpstan-deprecation-rules": "^1.1",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpstan/extension-installer": "^1.3",
+        "phpro/grumphp-shim": "^2.4",
+        "phpunit/phpunit": "^10"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "phpro/grumphp-shim": true
+        }
+    }
+}
